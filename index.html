@@ -21,6 +21,16 @@
         h1 {
             text-align: center;
         }
+        .note-wrapper {
+            display: flex;
+        }
+        .line-numbers {
+            padding-right: 10px;
+            font-family: monospace;
+            color: #aaa;
+            text-align: right;
+            padding-top: 10px;
+        }
         textarea {
             width: 100%;
             height: 200px;
@@ -31,114 +41,114 @@
             font-size: 14px;
             resize: none;
         }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
         button {
-            display: block;
-            width: 100%;
             padding: 10px;
-            background-color: #4CAF50;
-            color: white;
             font-size: 16px;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
+            width: 48%;
+            border-radius: 8px;
+            text-align: center;
         }
-        button:hover {
+        button#saveBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        button#saveBtn:hover {
             background-color: #45a049;
         }
-        .note-display {
-            margin-top: 20px;
-            white-space: pre-wrap;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: monospace;
-            position: relative;
-        }
-        .note-display .line {
-            display: flex;
-            align-items: center;
-            padding-left: 20px;
-        }
-        .note-display .line .line-number {
-            color: #aaa;
-            margin-right: 10px;
-        }
-        .note-display .panel {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 8px 8px;
-        }
-        .delete-btn {
+        button#deleteBtn {
             background-color: #f44336;
+            color: white;
         }
-        .delete-btn:hover {
+        button#deleteBtn:hover {
             background-color: #e53935;
+        }
+        /* Styling untuk pesan konfirmasi */
+        .message {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            margin-top: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .error {
+            background-color: #f44336;
+            color: white;
         }
     </style>
 </head>
 <body>
 
+<!-- Catatan Raw -->
 <div class="container">
     <h1>Catatan Raw</h1>
-    <textarea id="textInput" placeholder="Tulis catatan Anda di sini..."></textarea>
-    <button id="saveBtn">Simpan Catatan</button>
-    <button class="delete-btn" id="deleteBtn">Hapus Catatan</button>
-
-    <div class="note-display" id="noteDisplay">
-        <div class="panel"></div>
+    <!-- Wrapper untuk Textarea dan Nomor Baris -->
+    <div class="note-wrapper">
+        <div class="line-numbers" id="lineNumbers">1</div>
+        <textarea id="textInput" placeholder="Tulis catatan Anda di sini..."></textarea>
     </div>
+    
+    <!-- Button container untuk tombol simpan dan hapus -->
+    <div class="button-container">
+        <button id="deleteBtn">Hapus Catatan</button>
+        <button id="saveBtn">Simpan Catatan</button>
+    </div>
+
+    <!-- Pesan Konfirmasi -->
+    <div id="message" class="message"></div>
 </div>
 
 <script>
-    // Mendapatkan elemen
     const saveBtn = document.getElementById('saveBtn');
     const deleteBtn = document.getElementById('deleteBtn');
     const textInput = document.getElementById('textInput');
-    const noteDisplay = document.getElementById('noteDisplay');
+    const lineNumbers = document.getElementById('lineNumbers');
+    const message = document.getElementById('message');
 
     // Fungsi untuk menyimpan teks
     function saveText() {
         const text = textInput.value;
         if (text) {
-            // Menggunakan splitlines untuk membagi teks menjadi baris-baris terpisah
-            const lines = text.split('\n'); 
-            localStorage.setItem('rawNote', JSON.stringify(lines)); // Menyimpan array baris dalam localStorage
-            displayNote(); // Menampilkan catatan yang disimpan
+            const lines = text.split('\n');
+            localStorage.setItem('rawNote', JSON.stringify(lines));
+            updateTextarea(lines);
+            showMessage('Teks berhasil disimpan!', 'success');
         }
     }
 
-    // Fungsi untuk menampilkan catatan
-    function displayNote() {
-        const storedNote = localStorage.getItem('rawNote');
-        if (storedNote) {
-            // Mengambil data yang disimpan dan mengubahnya kembali menjadi array
-            const lines = JSON.parse(storedNote);
-            noteDisplay.innerHTML = ''; // Mengosongkan tampilan sebelumnya
-            lines.forEach((line, index) => {
-                const lineElement = document.createElement('div');
-                lineElement.classList.add('line');
-                lineElement.innerHTML = `<span class="line-number">${index + 1}</span>${line}`;
-                noteDisplay.appendChild(lineElement);
-            });
-
-            // Tambahkan panel samar di bawah catatan
-            const panel = document.createElement('div');
-            panel.classList.add('panel');
-            noteDisplay.appendChild(panel);
-        } else {
-            noteDisplay.innerHTML = '<div class="line">Tidak ada catatan yang disimpan.</div>';
-        }
+    // Fungsi untuk memperbarui textarea dengan catatan yang disimpan
+    function updateTextarea(lines) {
+        textInput.value = lines.join('\n'); // Menampilkan kembali catatan yang disimpan di textarea
     }
 
     // Fungsi untuk menghapus catatan
     function deleteNote() {
-        localStorage.removeItem('rawNote'); // Menghapus catatan dari localStorage
-        displayNote(); // Menampilkan pesan jika tidak ada catatan
+        localStorage.removeItem('rawNote');
+        textInput.value = ''; // Kosongkan textarea setelah dihapus
+        showMessage('Teks berhasil dihapus!', 'error');
+    }
+
+    // Fungsi untuk menampilkan pesan konfirmasi
+    function showMessage(msg, type) {
+        message.textContent = msg;
+        message.className = `message ${type}`;
+        message.style.display = 'block';
+
+        // Sembunyikan pesan setelah 3 detik
+        setTimeout(() => {
+            message.style.display = 'none';
+        }, 3000);
     }
 
     // Event listener untuk tombol simpan
@@ -147,8 +157,25 @@
     // Event listener untuk tombol hapus
     deleteBtn.addEventListener('click', deleteNote);
 
-    // Menampilkan catatan saat pertama kali halaman dimuat
-    displayNote();
+    // Tampilkan catatan yang disimpan saat pertama kali halaman dimuat
+    function loadNote() {
+        const storedNote = localStorage.getItem('rawNote');
+        if (storedNote) {
+            const lines = JSON.parse(storedNote);
+            updateTextarea(lines);
+        }
+    }
+
+    loadNote();
+
+    // Update nomor baris di sebelah kiri textarea saat mengetik
+    textInput.addEventListener('input', function() {
+        const lines = textInput.value.split('\n');
+        lineNumbers.innerHTML = '';
+        lines.forEach((_, index) => {
+            lineNumbers.innerHTML += `<div>${index + 1}</div>`;
+        });
+    });
 </script>
 
 </body>
