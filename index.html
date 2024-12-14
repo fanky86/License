@@ -8,13 +8,14 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f4f4f9;
+            background-color: #000; /* Latar belakang halaman hitam */
+            color: white;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: white;
+            background-color: #333; /* Latar belakang container abu-abu */
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -40,34 +41,27 @@
             font-family: monospace;
             font-size: 14px;
             resize: none;
+            background-color: #555; /* Latar belakang textarea abu-abu */
+            color: white;
         }
         .button-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             margin-top: 10px;
         }
         button {
-            padding: 10px;
-            font-size: 16px;
+            padding: 8px 16px;
+            font-size: 14px;
             border: none;
             cursor: pointer;
-            width: 48%;
+            width: auto;
             border-radius: 8px;
+            background-color: #4CAF50; /* Tombol simpan hijau */
+            color: white;
             text-align: center;
         }
-        button#saveBtn {
-            background-color: #4CAF50;
-            color: white;
-        }
-        button#saveBtn:hover {
+        button:hover {
             background-color: #45a049;
-        }
-        button#deleteBtn {
-            background-color: #f44336;
-            color: white;
-        }
-        button#deleteBtn:hover {
-            background-color: #e53935;
         }
         /* Styling untuk pesan konfirmasi */
         .message {
@@ -99,7 +93,7 @@
         <textarea id="textInput" placeholder="Tulis catatan Anda di sini..."></textarea>
     </div>
     
-    <!-- Button container untuk tombol simpan dan hapus -->
+    <!-- Button container untuk tombol simpan -->
     <div class="button-container">
         <button id="saveBtn">Simpan Catatan</button>
     </div>
