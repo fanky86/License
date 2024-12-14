@@ -105,7 +105,6 @@
 <script>
     const saveBtn = document.getElementById('saveBtn');
     const textInput = document.getElementById('textInput');
-    const lineNumbers = document.getElementById('lineNumbers');
     const message = document.getElementById('message');
 
     // Fungsi untuk menyimpan teks
@@ -113,22 +112,11 @@
         const text = textInput.value;
         if (text) {
             const lines = text.split('\n');
-            localStorage.setItem('rawNote', JSON.stringify(lines));
-            updateTextarea(lines);
+            localStorage.setItem('rawNote', JSON.stringify(lines)); // Menyimpan teks di localStorage
             showMessage('Teks berhasil disimpan!', 'success');
+        } else {
+            showMessage('Teks tidak boleh kosong!', 'error');
         }
-    }
-
-    // Fungsi untuk memperbarui textarea dengan catatan yang disimpan
-    function updateTextarea(lines) {
-        textInput.value = lines.join('\n'); // Menampilkan kembali catatan yang disimpan di textarea
-    }
-
-    // Fungsi untuk menghapus catatan
-    function deleteNote() {
-        localStorage.removeItem('rawNote');
-        textInput.value = ''; // Kosongkan textarea setelah dihapus
-        showMessage('Teks berhasil dihapus!', 'error');
     }
 
     // Fungsi untuk menampilkan pesan konfirmasi
@@ -143,31 +131,20 @@
         }, 3000);
     }
 
-    // Event listener untuk tombol simpan
-    saveBtn.addEventListener('click', saveText);
-
-    // Event listener untuk tombol hapus
-    deleteBtn.addEventListener('click', deleteNote);
-
-    // Tampilkan catatan yang disimpan saat pertama kali halaman dimuat
+    // Menampilkan catatan yang disimpan di textarea saat halaman dimuat
     function loadNote() {
         const storedNote = localStorage.getItem('rawNote');
         if (storedNote) {
             const lines = JSON.parse(storedNote);
-            updateTextarea(lines);
+            textInput.value = lines.join('\n'); // Menampilkan catatan yang disimpan
         }
     }
 
-    loadNote();
+    // Menyimpan catatan ketika tombol Simpan ditekan
+    saveBtn.addEventListener('click', saveText);
 
-    // Update nomor baris di sebelah kiri textarea saat mengetik
-    textInput.addEventListener('input', function() {
-        const lines = textInput.value.split('\n');
-        lineNumbers.innerHTML = '';
-        lines.forEach((_, index) => {
-            lineNumbers.innerHTML += `<div>${index + 1}</div>`;
-        });
-    });
+    // Memuat catatan yang sudah disimpan ketika halaman dimuat
+    loadNote();
 </script>
 
 </body>
